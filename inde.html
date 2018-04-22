@@ -1,0 +1,68 @@
+<!DOCTYPE html><html>
+  <head>
+    <meta charset="UTF-8" /> <title>Greeting Person</title>
+    <script src="react.development.js"></script>
+    <script src="react-dom.development.js"></script>
+    <script src="babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+        function Welcome(props) {
+            return <h1>Hello, {props.name}</h1>;
+        }
+
+        function Region(countries){
+
+            let regions = [];
+            for(var i=0; i < countries.length; i++){
+                let region_name = countries[i].region;
+                let subRegion_name = countries[i]['sub-region'];
+                let country_name = countries[i].name;
+                let yaExisteRegion = false;
+                let yaExisteSubRegion = false;
+                if(i==0){
+                    regions.push({name: region_name, subRegions: [{name: subRegion_name, countries: [ {name: country_name} ]}] });
+                }
+                else{
+                    for(var r = 0; r < regions.length; r++){
+                        if(regions[r].name == region_name){
+                            yaExisteRegion = true;
+                            for(var s = 0; s < regions[r].subRegions.length; s++){
+                                if(regions[r].subRegions[s].name == subRegion_name){
+                                    yaExisteSubRegion = true;
+                                    regions[r].subRegions[s].countries.push({name:country_name}); 
+                                } 
+                            }
+                            if(!yaExisteSubRegion){
+                                regions[r].subRegions.push({name: subRegion_name, countries: [ {name: country_name} ] });
+                                yaExisteSubRegion = false;
+                            }
+                        }
+                    }
+                    if(!yaExisteRegion){
+                        regions.push({name:region_name, subRegions: [{name: subRegion_name, countries: [ {name: country_name} ]}] });
+                        yaExisteRegion = false;
+                    }        
+                }
+            }
+        }
+
+        var headers = new Headers({ "Content-Type": "application/json" })
+        let paises;
+         fetch('https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.json', {method: 'get'})
+        .then(function(response) {
+            return response.json()
+        }).then(function(response){ 
+            paises = response;
+            Region(paises);
+          //  const element = <Welcome name="omi"  />;
+          //  ReactDOM.render(element,document.getElementById('root'));
+
+         }).catch( function( err ) {
+            console.log(err);   
+        });
+
+    </script>
+  </body>
+</html>
